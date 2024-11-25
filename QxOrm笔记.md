@@ -22,3 +22,9 @@
 #### 说明
 * 文档说要通过`QX_REGISTER_HPP`与`QX_REGISTER_CPP`宏来注册, 也好用.
   上面`export.hpp`内容是参考官方例子写出来的, 贴在这里目的是做个记录.
+### 修改主键默认类型, 默认为`long`
+```cpp
+QX_REGISTER_PRIMARY_KEY(Person, uint64_t)
+QX_REGISTER_HPP_MY_DEMO(Person, qx::trait::no_base_class_defined, 0)
+```
+* `QX_REGISTER_PRIMARY_KEY`必须在`QX_REGISTER_HPP_MY_DEMO`前面.

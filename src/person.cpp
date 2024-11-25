@@ -1,8 +1,6 @@
-#include <export.hpp>
 #include <person.hpp>
 
-// QX_REGISTER_CPP_MY_DEMO(Person)
-QX_REGISTER_CPP(Person)
+QX_REGISTER_CPP_MY_DEMO(Person)
 
 namespace qx {
     template <> void register_class(QxClass<Person> &t)

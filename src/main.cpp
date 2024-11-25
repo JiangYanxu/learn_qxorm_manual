@@ -1,27 +1,53 @@
 #include <QCoreApplication>
 #include <QDebug>
-// #include <drug.h>
+#include <person.hpp>
+
+QString getDBName();
 
 int main(int argc, char * argv[])
 {
     QCoreApplication a(argc, argv);
     qDebug() << "main start!";
-    // qx::QxSqlDatabase::getSingleton()->setDriverName("QSQLITE");
-    // qx::QxSqlDatabase::getSingleton()->setDatabaseName("./1.db");
-    // qx::QxSqlDatabase::getSingleton()->setHostName("localhost");
-    // qx::QxSqlDatabase::getSingleton()->setUserName("root");
-    // qx::QxSqlDatabase::getSingleton()->setPassword("");
-    // QSqlError daoError = qx::dao::create_table<drug>();
-    // drug d;
-    // d.name = "test";
-    // d.description = "111";
 
-    // daoError = qx::dao::insert(d);
-    // drug d2;
-    // d2.id = 1;
-    // daoError = qx::dao::fetch_by_id(d2);
-    // qDebug() << "name:" << d2.name << "description:" << d2.description;
-
+    qx::QxSqlDatabase::getSingleton()->setDriverName("QSQLITE");
+    qx::QxSqlDatabase::getSingleton()->setDatabaseName(getDBName());
+    qx::QxSqlDatabase::getSingleton()->setHostName("localhost");
+    qx::QxSqlDatabase::getSingleton()->setUserName("root");
+    qx::QxSqlDatabase::getSingleton()->setPassword("");
+    QSqlError dbError;
+    do
+    {
+        dbError = qx::dao::create_table<Person>();
+        if (dbError.isValid())
+        {
+            qCritical() << "Create table failed:" << dbError.text();
+            break;
+        }
+    } while (false);
     qDebug() << "main stop!";
-    return a.exec();
+    // return a.exec();
+    return 0;
+}
+
+#include <QFile>
+#include <mutex>
+
+QString getDBName()
+{
+    QString dbName;
+    std::once_flag once;
+    std::call_once(once, [](QString &dbName) {
+        dbName = QCoreApplication::applicationDirPath() + "/MyDemo.db";
+        qDebug() << "DB name:" << dbName;
+        QFile file(dbName);
+        if (file.exists())
+        {
+            qDebug() << "Delete file:" << dbName;
+            if (!file.remove())
+            {
+                qCritical() << "Delete file failed:" << dbName;
+            }
+        }
+    }, dbName);
+    return dbName;
 }

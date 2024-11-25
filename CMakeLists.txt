@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(QxOrmDemo)
+project(demoQxOrm)
 
 set(QT_ROOT "C:/Qt/5.15.2")
 
@@ -32,13 +32,16 @@ add_executable(${PROJECT_NAME})
 target_sources(${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${${PROJECT_NAME}_INC_PATH})
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Core Qt5::Sql QxOrmDll)
-target_compile_definitions(${PROJECT_NAME} PRIVATE _BUILD_MY_DEMO)
+target_compile_definitions(${PROJECT_NAME} PRIVATE BUILD_MY_DEMO)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+find_file(libQxOrmd_DLL libQxOrmd.dll PATHS ${QxOrmDll_HOME}/lib NO_DEFAULT_PATH REQUIRED)
 add_custom_target(windeployqt
-    COMMAND ${QT_HOME}/bin/windeployqt.exe --no-translations ${PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
-    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}
-    COMMENT "Copy Qt's Dll required for ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/${PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${libQxOrmd_DLL} .
+    COMMAND windeployqt.exe --no-translations ${PROJECT_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
 )
+endif()
 
 # cmake -G "MinGW Makefiles" --system-information "MinGW System Information.txt"
 # cmake -G "Visual Studio 17 2022" --system-information "VS 17 2022 System Information.txt"
